@@ -1,1 +1,1 @@
-# @dotlim/script
+# @dotlim/scripts
