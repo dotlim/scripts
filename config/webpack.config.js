@@ -9,8 +9,11 @@ const postcssNormalize = require('postcss-normalize');
 const ManifestPlugin = require('webpack-manifest-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const config = require('./dotlim.config');
+const _ = require('lodash');
 
 const paths = require('./paths');
+const packageJson = require(paths.appPackageJson);
+const pluginConfig = _.pick(packageJson, ['name', 'version', 'description']);
 const getClientEnvironment = require('./env');
 
 // Source maps are resource heavy and can cause out of memory issue for large source files.
@@ -336,7 +339,7 @@ module.exports = webpackEnv => {
       //   can be used to reconstruct the HTML if necessary
       isEnvProduction &&
         new ManifestPlugin({
-          fileName: 'asset-manifest.json',
+          fileName: 'manifest.json',
           // publicPath:
           generate: (seed, files, entrypoints) => {
             const manifestFiles = files.reduce((manifest, file) => {
@@ -347,6 +350,7 @@ module.exports = webpackEnv => {
             const entrypointFiles = entrypoints.main.filter(fileName => !fileName.endsWith('.map'));
 
             return {
+              plugin: pluginConfig,
               files: manifestFiles,
               entrypoints: entrypointFiles
             };

@@ -9,30 +9,31 @@ const configFactory = require('../config/webpack.config');
 const paths = require('../config/paths');
 
 // main
+module.exports = opts => {
+  console.log(chalk.cyan('Creating an optimized production build...\n'));
 
-console.log(chalk.cyan('Creating an optimized production build...\n'));
+  let compiler;
 
-let compiler;
-
-try {
-  compiler = webpack(configFactory('production'));
-} catch (err) {
-  console.error(err);
-  process.exit(1);
-}
-
-compiler.run((error, stats) => {
-  if (error) {
-    return console.log(error);
+  try {
+    compiler = webpack(configFactory('production'));
+  } catch (err) {
+    console.error(err);
+    process.exit(1);
   }
 
-  console.log(
-    stats.toString({
-      all: false,
-      errors: true,
-      warnings: true,
-      assets: true,
-      colors: true
-    })
-  );
-});
+  compiler.run((error, stats) => {
+    if (error) {
+      return console.log(error);
+    }
+
+    console.log(
+      stats.toString({
+        all: false,
+        errors: true,
+        warnings: true,
+        assets: true,
+        colors: true
+      })
+    );
+  });
+};
