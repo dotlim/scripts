@@ -52,7 +52,7 @@ module.exports = webpackEnv => {
       {
         loader: require.resolve('postcss-loader'),
         options: {
-          soureMap: isEnvDevelopment,
+          sourceMap: isEnvDevelopment,
           plugins: () => [
             require('postcss-flexbugs-fixes'),
             require('postcss-preset-env')({
@@ -71,7 +71,7 @@ module.exports = webpackEnv => {
       loaders.push({
         loader: require.resolve(preProcessor),
         options: {
-          sourceMap: true
+          sourceMap: isEnvDevelopment
         }
       });
     }
