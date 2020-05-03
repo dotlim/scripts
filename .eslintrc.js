@@ -1,23 +1,19 @@
-module.exports = {
-  root: true,
-  env: {
-    node: true,
-    es6: true,
-    browser: true
-  },
-  extends: 'eslint:recommended',
+const _ = require('lodash');
+
+const OFF = 'off';
+const WARN = 'warn';
+const ERROR = 'error';
+
+module.exports = _.merge(require('@dotlim/eslint-config').eslint, {
   rules: {
-    'no-console': 0,
-    'no-unused-vars': 0
-  },
-  parserOptions: {
-    parser: 'babel-eslint',
-    ecmaVersion: 6,
-    sourceType: 'module',
-    ecmaFeatures: {
-      jsx: true,
-      modules: true,
-      experimentalObjectRestSpread: true
-    }
+    'no-cond-assign': WARN,
+    'no-console': OFF,
+    'no-param-reassign': OFF,
+    'no-plusplus': WARN,
+    'no-unused-vars': WARN,
+    'no-restricted-syntax': OFF,
+    'no-trailing-spaces': ERROR,
+    'no-underscore-dangle': OFF,
+    'prefer-const': OFF
   }
-};
+});

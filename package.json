@@ -1,6 +1,6 @@
 {
   "name": "@dotlim/scripts",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Bundler for dotlim submodules",
   "bin": {
     "dotlim": "bin/dotlim.js"
@@ -23,6 +23,7 @@
     "dotenv": "^8.2.0",
     "dotenv-expand": "^5.1.0",
     "eslint": "^6.8.0",
+    "eslint-friendly-formatter": "^4.0.1",
     "eslint-loader": "^4.0.0",
     "file-loader": "^6.0.0",
     "html-webpack-plugin": "^4.0.4",

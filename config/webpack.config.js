@@ -25,9 +25,7 @@ const shouldInlineRuntimeChunk = process.env.INLINE_RUNTIME_CHUNK !== 'false';
 const imageInlineSizeLimit = parseInt(process.env.IMAGE_INLINE_SIZE_LIMIT || '10000');
 
 const publicPath =
-  config.publicPath !== '/' && config.publicPath.endsWith('/')
-    ? config.publicPath.slice(0, -1)
-    : config.publicPath;
+  config.publicPath !== '/' && config.publicPath.endsWith('/') ? config.publicPath.slice(0, -1) : config.publicPath;
 
 // style files regexes
 const cssRegex = /\.css$/;
@@ -44,10 +42,14 @@ module.exports = webpackEnv => {
   // common function to get style loaders
   const getStyleLoaders = (cssOptions, preProcessor) => {
     const loaders = [
-      isEnvDevelopment ? require.resolve('style-loader') : MiniCssExtractPlugin.loader,
+      isEnvDevelopment && require.resolve('style-loader'),
+      isEnvProduction && {
+        loader: MiniCssExtractPlugin.loader,
+        options: {},
+      },
       {
         loader: require.resolve('css-loader'),
-        options: cssOptions
+        options: cssOptions,
       },
       {
         loader: require.resolve('postcss-loader'),
@@ -57,22 +59,22 @@ module.exports = webpackEnv => {
             require('postcss-flexbugs-fixes'),
             require('postcss-preset-env')({
               autoprefixer: {
-                flexbox: 'no-2009'
+                flexbox: 'no-2009',
               },
-              stage: 3
+              stage: 3,
             }),
-            postcssNormalize()
-          ]
-        }
-      }
+            postcssNormalize(),
+          ],
+        },
+      },
     ].filter(Boolean);
 
     if (preProcessor) {
       loaders.push({
         loader: require.resolve(preProcessor),
         options: {
-          sourceMap: isEnvDevelopment
-        }
+          sourceMap: isEnvDevelopment,
+        },
       });
     }
 
@@ -83,7 +85,7 @@ module.exports = webpackEnv => {
     mode: isEnvProduction ? 'production' : isEnvDevelopment && 'development',
     devtool: isEnvDevelopment ? 'cheap-module-source-map' : false,
     entry: {
-      main: paths.appIndexJs
+      main: paths.appIndexJs,
     },
     output: {
       // The build folder.
@@ -94,12 +96,10 @@ module.exports = webpackEnv => {
       // In development, it does not produce real files.
       filename: isEnvProduction ? 'static/js/[name].[contenthash:8].js' : 'static/js/[name].js',
       // There are also additional JS chunk files if you use code splitting.
-      chunkFilename: isEnvProduction
-        ? 'static/js/[name].[contenthash:8].js'
-        : 'static/js/[name].chunk.js',
+      chunkFilename: isEnvProduction ? 'static/js/[name].[contenthash:8].js' : 'static/js/[name].chunk.js',
       // this defaults to 'window', but by setting it to 'this' then
       // module chunks which are built will work in web workers as well.
-      globalObject: 'this'
+      globalObject: 'this',
     },
     optimization: {
       minimize: isEnvProduction,
@@ -108,16 +108,16 @@ module.exports = webpackEnv => {
         new TerserPlugin({
           terserOptions: {
             parse: {
-              ecma: 8
+              ecma: 8,
             },
             compress: {
               ecma: 5,
               warnings: false,
               comparisons: false,
-              inline: 2
+              inline: 2,
             },
             mangle: {
-              safari10: true
+              safari10: true,
             },
             // Added for profiling in devtools
             keep_classnames: false,
@@ -125,11 +125,11 @@ module.exports = webpackEnv => {
             output: {
               ecma: 5,
               comments: false,
-              ascii_only: true
-            }
+              ascii_only: true,
+            },
           },
           extractComments: false,
-          sourceMap: isEnvProduction
+          sourceMap: isEnvProduction,
         }),
         // This is only used in production mode
         new OptimizeCSSAssetsPlugin({
@@ -142,44 +142,44 @@ module.exports = webpackEnv => {
                   inline: false,
                   // `annotation: true` appends the sourceMappingURL to the end of
                   // the css file, helping the browser find the sourcemap
-                  annotation: true
+                  annotation: true,
                 }
-              : false
+              : false,
           },
           cssProcessorPluginOptions: {
             preset: [
               'default',
               {
                 minifyFontValues: {
-                  removeQuotes: true
-                }
-              }
-            ]
-          }
-        })
+                  removeQuotes: true,
+                },
+              },
+            ],
+          },
+        }),
       ],
       // Automatically split vendor and commons
       splitChunks: {
         chunks: 'all',
-        name: false
+        name: false,
       },
       // Keep the runtime chunk separated to enable long term caching
       runtimeChunk: {
-        name: entrypoint => `runtime-${entrypoint.name}`
-      }
+        name: entrypoint => `runtime-${entrypoint.name}`,
+      },
     },
     resolve: {
       modules: ['node_modules', paths.appNodeModules],
       extensions: ['.js', '.jsx', '.ts', '.tsx', '.json', '.wasm', '.mjs'],
       alias: {
-        '@': paths.appSrc
-      }
+        '@': paths.appSrc,
+      },
     },
     module: {
       strictExportPresence: true,
       rules: [
         {
-          parser: { requireEnsure: false }
+          parser: { requireEnsure: false },
         },
         {
           test: /\.(js|mjs|jsx|ts|tsx)$/,
@@ -188,14 +188,14 @@ module.exports = webpackEnv => {
             {
               options: {
                 cache: true,
-                // formatter:
+                formatter: require.resolve('eslint-friendly-formatter'),
                 eslintPath: require.resolve('eslint'),
-                resolvePluginsRelativeTo: __dirname
+                resolvePluginsRelativeTo: __dirname,
               },
-              loader: require.resolve('eslint-loader')
-            }
+              loader: require.resolve('eslint-loader'),
+            },
           ],
-          include: paths.appSrc
+          include: paths.appSrc,
         },
         {
           // "oneOf" will traverse all following loaders until one will
@@ -210,8 +210,8 @@ module.exports = webpackEnv => {
               loader: require.resolve('url-loader'),
               options: {
                 limit: imageInlineSizeLimit,
-                name: 'static/media/[name].[hash:8].[ext]'
-              }
+                name: 'static/media/[name].[hash:8].[ext]',
+              },
             },
             // Process application JS with Babel.
             {
@@ -221,8 +221,8 @@ module.exports = webpackEnv => {
               options: {
                 cacheDirectory: true,
                 cacheCompression: false,
-                compact: isEnvProduction
-              }
+                compact: isEnvProduction,
+              },
             },
             // Process any JS outside of the app with Babel.
             // Unlike the application JS, we only compile the standard ES features.
@@ -238,8 +238,8 @@ module.exports = webpackEnv => {
                 cacheDirectory: true,
                 cacheCompression: false,
                 sourceMaps: false,
-                inputSourceMap: false
-              }
+                inputSourceMap: false,
+              },
             },
             // "postcss" loader applies autoprefixer to our CSS.
             // "css" loader resolves paths in CSS and adds assets as dependencies.
@@ -253,8 +253,8 @@ module.exports = webpackEnv => {
               exclude: cssModuleRegex,
               use: getStyleLoaders({
                 importLoaders: 1,
-                sourceMap: isEnvDevelopment
-              })
+                sourceMap: isEnvDevelopment,
+              }),
               // sideEffects: true
             },
             // Opt-in support for SASS (using .scss or .sass extensions).
@@ -266,10 +266,10 @@ module.exports = webpackEnv => {
               use: getStyleLoaders(
                 {
                   importLoaders: 3,
-                  sourceMap: isEnvDevelopment
+                  sourceMap: isEnvDevelopment,
                 },
                 'sass-loader'
-              )
+              ),
               // sideEffects: true
             },
             // "file" loader makes sure those assets get served by WebpackDevServer.
@@ -279,43 +279,38 @@ module.exports = webpackEnv => {
             // that fall through the other loaders.
             {
               loader: require.resolve('file-loader'),
-              exclude: [/\.(js|jsx|ts|tsx)$/, /\.html$/, /\.json$/],
+              exclude: [/\.(js|mjs|jsx|ts|tsx)$/, /\.html$/, /\.json$/],
               options: {
-                name: 'static/media/[name].[hash:8].[ext]'
-              }
-            }
-          ]
-        }
-      ]
+                name: 'static/media/[name].[hash:8].[ext]',
+              },
+            },
+          ],
+        },
+      ],
     },
     plugins: [
       new CleanWebpackPlugin(),
       // Generates an `index.html` file with the <script> injected.
-      new HtmlWebpackPlugin(
-        Object.assign(
-          {},
-          {
-            inject: true,
-            template: paths.appHtml
+      new HtmlWebpackPlugin({
+        inject: true,
+        template: paths.appHtml,
+
+        // Production
+        ...(isEnvProduction && {
+          minify: {
+            removeComments: true,
+            collapseWhitespace: true,
+            removeRedundantAttributes: true,
+            useShortDoctype: true,
+            removeEmptyAttributes: true,
+            removeStyleLinkTypeAttributes: true,
+            keepClosingSlash: true,
+            minifyJS: true,
+            minifyCSS: true,
+            minifyURLs: true,
           },
-          isEnvProduction
-            ? {
-                minify: {
-                  removeComments: true,
-                  collapseWhitespace: true,
-                  removeRedundantAttributes: true,
-                  useShortDoctype: true,
-                  removeEmptyAttributes: true,
-                  removeStyleLinkTypeAttributes: true,
-                  keepClosingSlash: true,
-                  minifyJS: true,
-                  minifyCSS: true,
-                  minifyURLs: true
-                }
-              }
-            : undefined
-        )
-      ),
+        }),
+      }),
       // Makes some environment variables available to the JS code, for example:
       // if (process.env.NODE_ENV === 'production') { ... }. See `./env.js`.
       // It is absolutely essential that NODE_ENV is set to production
@@ -330,7 +325,7 @@ module.exports = webpackEnv => {
           // Options similar to the same options in webpackOptions.output
           // both options are optional
           filename: 'static/css/[name].[contenthash:8].css',
-          chunkFilename: 'static/css/[name].[contenthash:8].chunk.css'
+          chunkFilename: 'static/css/[name].[contenthash:8].chunk.css',
         }),
       // Generate an asset manifest file with the following content:
       // - "files" key: Mapping of all asset filenames to their corresponding
@@ -353,19 +348,19 @@ module.exports = webpackEnv => {
             return {
               plugin: pluginConfig,
               files: manifestFiles,
-              entrypoints: entrypointFiles
+              entrypoints: entrypointFiles,
             };
-          }
+          },
         }),
       // Moment.js is an extremely popular library that bundles large locale files
       // by default due to how webpack interprets its code. This is a practical
       // solution that requires the user to opt into importing specific locales.
       // https://github.com/jmblog/how-to-optimize-momentjs-with-webpack
       // You can remove this if you don't use Moment.js:
-      new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/)
+      new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
     ].filter(Boolean),
     // Turn off performance processing because we utilize
     // our own hints via the FileSizeReporter
-    performance: false
+    performance: false,
   };
 };
