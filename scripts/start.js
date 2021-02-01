@@ -57,8 +57,6 @@ module.exports = opts => {
       warnings: true
     });
 
-    console.log(statsData);
-
     console.log(chalk.green('Compiled successfully!'));
     console.log();
     console.log(`You can now view ${chalk.bold(appName)} in the browser.`);

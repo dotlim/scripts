@@ -2,26 +2,33 @@ const fs = require('fs');
 const path = require('path');
 const _ = require('lodash');
 
-const appDirectory = fs.realpathSync(process.cwd());
-const customConfigPath = path.resolve(appDirectory, 'dotlim.config.js');
+const paths = require('./paths');
+
+const dotlimConfigPath = path.resolve(paths.appRoot, 'dotlim.config.js');
 
 let CUSTOM_CONFIG = {};
 
-if (fs.existsSync(customConfigPath)) {
-  CUSTOM_CONFIG = require(customConfigPath);
+if (fs.existsSync(dotlimConfigPath)) {
+  CUSTOM_CONFIG = require(dotlimConfigPath);
 }
 
 if (!_.isPlainObject(CUSTOM_CONFIG)) {
   throw new Error('dotlim.config.js must export plain object');
 }
 
-const DEFAULT_CONFIG = {
-  root: appDirectory,
+const defaultConfig = {
+  root: paths.appRoot,
   open: true,
-  port: 8007,
+  port: 9010,
   dist: './dist',
   publicPath: '/',
-  proxy: {}
+  proxy: {},
+
+  compilerOptions: {
+    inlineRuntimeChunk: false,
+    shouldUseSourceMap: false,
+    imageInlineSizeLimit: 10000,
+  },
 };
 
-module.exports = _.merge(DEFAULT_CONFIG, _.omit(CUSTOM_CONFIG, ['root']));
+module.exports = _.merge(defaultConfig, _.omit(CUSTOM_CONFIG, ['root']));
