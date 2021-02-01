@@ -2,7 +2,7 @@
   <div id="App">
     <p class="title">
       Hello
-      <b>{{ msg }}!</b>
+      <b class="name">{{ msg }}!</b>
     </p>
   </div>
 </template>
@@ -21,8 +21,15 @@ export default {
 
 <style lang="scss">
 @import './style.scss';
+
 .title {
+  color: rgb(79, 92, 97);
+  font-size: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans',
+    'Helvetica Neue', sans-serif;
+}
+
+.name {
   font-weight: 600;
-  color: red;
 }
 </style>

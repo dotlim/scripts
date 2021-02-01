@@ -13,6 +13,8 @@ const paths = require('./paths');
 const getClientEnvironment = require('./env');
 const config = require('./dotlim.config');
 
+const { inlineRuntimeChunk, shouldUseSourceMap, imageInlineSizeLimit } = config.compilerOptions;
+
 // style files regexes
 const cssRegex = /\.css$/;
 const cssModuleRegex = /\.module\.css$/;
@@ -84,6 +86,50 @@ module.exports = webpackEnv => {
     module: {
       strictExportPresence: true,
       rules: [
+        // {
+        //   parser: { requireEnsure: false },
+        // },
+        // {
+        //   test: /\.(js|mjs|jsx|ts|tsx)$/,
+        //   enforce: 'pre',
+        //   use: [
+        //     {
+        //       options: {
+        //         cache: true,
+        //         formatter: require.resolve('eslint-friendly-formatter'),
+        //         eslintPath: require.resolve('eslint'),
+        //         resolvePluginsRelativeTo: paths.appSrc,
+        //       },
+        //       loader: require.resolve('eslint-loader'),
+        //     },
+        //   ],
+        //   include: paths.appSrc,
+        // },
+        {
+          test: /\.(js|jsx|ts|tsx)$/,
+          include: paths.appSrc,
+          loader: require.resolve('babel-loader'),
+          options: {
+            cacheDirectory: true,
+            cacheCompression: false,
+            compact: isProdEnv,
+          },
+        },
+        {
+          test: /\.js$/,
+          exclude: /@babel(?:\/|\\{1,2})runtime/,
+          loader: require.resolve('babel-loader'),
+          options: {
+            babelrc: false,
+            configFile: false,
+            compact: false,
+            // presets:
+            cacheDirectory: true,
+            cacheCompression: false,
+            sourceMaps: false,
+            inputSourceMap: false,
+          },
+        },
         {
           test: cssRegex,
           exclude: cssModuleRegex,
@@ -108,6 +154,14 @@ module.exports = webpackEnv => {
         {
           test: /\.vue$/,
           loader: 'vue-loader',
+        },
+        {
+          test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/],
+          loader: require.resolve('url-loader'),
+          options: {
+            limit: imageInlineSizeLimit,
+            name: 'media/[name].[hash:8].[ext]',
+          },
         },
       ],
     },
@@ -201,5 +255,9 @@ module.exports = webpackEnv => {
         name: entrypoint => `runtime-${entrypoint.name}`,
       },
     },
+
+    // Turn off performance processing because we utilize
+    // our own hints via the FileSizeReporter
+    performance: false,
   };
 };
