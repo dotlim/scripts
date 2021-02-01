@@ -1,0 +1,17 @@
+.info-block {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
+
+  // label klass
+  .info-label {
+    width: 100px;
+    color: rgba(0, 0, 0, 0.65);
+  }
+
+  // value klass
+  .info-value {
+    color: rgba(0, 0, 0, 0.85);
+  }
+}
