@@ -72,7 +72,7 @@ module.exports = webpackEnv => {
     mode: isProdEnv ? 'production' : isDevEnv ? 'development' : 'none',
 
     entry: {
-      main: paths.appIndexJs,
+      main: paths.appEntry,
     },
 
     output: {

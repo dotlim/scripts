@@ -2,9 +2,7 @@ const paths = require('./paths');
 const config = require('./dotlim.config');
 
 const publicPath =
-  config.publicPath !== '/' && config.publicPath.endsWith('/')
-    ? config.publicPath.slice(0, -1)
-    : config.publicPath;
+  config.publicPath !== '/' && config.publicPath.endsWith('/') ? config.publicPath.slice(0, -1) : config.publicPath;
 
 module.exports = {
   publicPath,
@@ -18,5 +16,5 @@ module.exports = {
   injectClient: true,
   quiet: true,
   overlay: false,
-  proxy: config.proxy
+  proxy: config.devServer.proxy,
 };

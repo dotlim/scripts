@@ -16,15 +16,16 @@ const isPrivateIP = ip => /^10[.]|^172[.](1[6-9]|2[0-9]|3[0-1])[.]|^192[.]168[.]
 // main
 module.exports = opts => {
   const appName = require(paths.appPackageJson).name;
-  const isOpen = Boolean(config.open);
-  const openHost = !isOpen ? false : config.open === true ? 'localhost' : config.open;
+  const devServer = config.devServer;
+  const isOpen = Boolean(devServer.open);
+  const openHost = !isOpen ? false : devServer.open === true ? 'localhost' : devServer.open;
   const isLocal = ['localhost', '127.0.0.1', '0.0.0.0'].includes(openHost);
 
   const localUrl = url.format({
     protocol: 'http',
     hostname: openHost,
-    port: config.port,
-    pathname: config.publicPath
+    port: devServer.port,
+    pathname: config.publicPath,
   });
   const lanIp = address.ip();
   let lanUrl;
@@ -32,8 +33,8 @@ module.exports = opts => {
     lanUrl = url.format({
       protocol: 'http',
       hostname: lanIp,
-      port: config.port,
-      pathname: config.publicPath
+      port: devServer.port,
+      pathname: config.publicPath,
     });
   }
 
@@ -54,7 +55,7 @@ module.exports = opts => {
     const statsData = stats.toJson({
       all: false,
       error: true,
-      warnings: true
+      warnings: true,
     });
 
     console.log(chalk.green('Compiled successfully!'));
@@ -68,15 +69,15 @@ module.exports = opts => {
 
   const server = new WebpackDevServer(compiler, devServerConfig);
 
-  server.listen(config.port, '0.0.0.0', error => {
+  server.listen(devServer.port, '0.0.0.0', error => {
     if (error) {
       return console.log(error);
     }
 
     console.log(chalk.cyan('Starting the development server...\n'));
 
-    ['SIGINT', 'SIGTERM'].forEach(function (sig) {
-      process.on(sig, function () {
+    ['SIGINT', 'SIGTERM'].forEach(function(sig) {
+      process.on(sig, function() {
         server.close();
         process.exit();
       });

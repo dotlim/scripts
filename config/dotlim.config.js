@@ -2,9 +2,8 @@ const fs = require('fs');
 const path = require('path');
 const _ = require('lodash');
 
-const paths = require('./paths');
-
-const dotlimConfigPath = path.resolve(paths.appRoot, 'dotlim.config.js');
+const appDirectory = fs.realpathSync(process.cwd());
+const dotlimConfigPath = path.resolve(appDirectory, 'example', 'dotlim.config.js');
 
 let CUSTOM_CONFIG = {};
 
@@ -17,13 +16,17 @@ if (!_.isPlainObject(CUSTOM_CONFIG)) {
 }
 
 const defaultConfig = {
-  root: paths.appRoot,
-  open: true,
-  port: 9010,
-  dist: './dist',
-  publicPath: '/',
-  proxy: {},
+  root: appDirectory,
 
+  publicPath: '/',
+  entryFile: 'src/index.js',
+  outputDir: 'build',
+  lineOnSave: false,
+  devServer: {
+    open: true,
+    port: 9090,
+    proxy: {},
+  },
   compilerOptions: {
     inlineRuntimeChunk: false,
     shouldUseSourceMap: false,

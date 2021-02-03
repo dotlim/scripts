@@ -1,5 +1,6 @@
 const path = require('path');
 const fs = require('fs');
+const config = require('./dotlim.config');
 
 const appDirectory = fs.realpathSync(process.cwd());
 const resolveApp = relativePath => path.resolve(appDirectory, 'example', relativePath); // TODO: 修改测试根目录
@@ -15,7 +16,7 @@ module.exports = {
   appPath: resolveApp('.'),
 
   // output dir
-  appBuild: resolveApp('build'),
+  appBuild: resolveApp(config.outputDir),
 
   // public dir
   appPublic: resolveApp('public'),
@@ -33,5 +34,5 @@ module.exports = {
   appSrc: resolveApp('src'),
 
   // entry files
-  appIndexJs: resolveApp('src/index.js'),
+  appEntry: resolveApp(config.entryFile),
 };
