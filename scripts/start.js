@@ -79,7 +79,7 @@ module.exports = opts => {
     ['SIGINT', 'SIGTERM'].forEach(function(sig) {
       process.on(sig, function() {
         server.close();
-        process.exit();
+        process.exit(1);
       });
     });
   });
