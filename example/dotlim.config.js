@@ -6,6 +6,7 @@ module.exports = {
   },
   compilerOptions: {
     inlineRuntimeChunk: false,
-    shouldUseSourceMap: false,
+    shouldUseSourceMap: true,
+    productionGzip: true,
   },
 };

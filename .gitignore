@@ -4,6 +4,8 @@
 # production
 /build
 /dist
+/example/build
+/example/dist
 
 # lock files
 package-lock.json

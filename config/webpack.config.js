@@ -6,14 +6,22 @@ const TerserPlugin = require('terser-webpack-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const CompressionWebpackPlugin = require('compression-webpack-plugin');
 const postcssNormalize = require('postcss-normalize');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
+const path = require('path');
 
 const paths = require('./paths');
 const getClientEnvironment = require('./env');
 const config = require('./dotlim.config');
 
-const { inlineRuntimeChunk, shouldUseSourceMap, imageInlineSizeLimit } = config.compilerOptions;
+const {
+  inlineRuntimeChunk,
+  shouldUseSourceMap,
+  imageInlineSizeLimit,
+  productionCache,
+  productionGzip,
+} = config.compilerOptions;
 
 // style files regexes
 const cssRegex = /\.css$/;
@@ -70,6 +78,7 @@ module.exports = webpackEnv => {
 
   return {
     mode: isProdEnv ? 'production' : isDevEnv ? 'development' : 'none',
+    devtool: isProdEnv ? (shouldUseSourceMap ? 'source-map' : false) : isDevEnv && 'cheap-module-source-map',
 
     entry: {
       main: paths.appEntry,
@@ -77,6 +86,7 @@ module.exports = webpackEnv => {
 
     output: {
       path: isProdEnv ? paths.appBuild : paths.appBuild,
+      publicPath: config.publicPath,
       pathinfo: isDevEnv,
       filename: isProdEnv ? 'js/[name].[contenthash:8].js' : 'js/[name].js',
       chunkFilename: isProdEnv ? 'js/[name].[contenthash:8].js' : 'js/[name].chunk.js',
@@ -110,58 +120,71 @@ module.exports = webpackEnv => {
           include: paths.appSrc,
           loader: require.resolve('babel-loader'),
           options: {
-            cacheDirectory: true,
+            cacheDirectory: productionCache,
             cacheCompression: false,
             compact: isProdEnv,
           },
-        },
-        {
-          test: /\.js$/,
-          exclude: /@babel(?:\/|\\{1,2})runtime/,
-          loader: require.resolve('babel-loader'),
-          options: {
-            babelrc: false,
-            configFile: false,
-            compact: false,
-            // presets:
-            cacheDirectory: true,
-            cacheCompression: false,
-            sourceMaps: false,
-            inputSourceMap: false,
-          },
-        },
-        {
-          test: cssRegex,
-          exclude: cssModuleRegex,
-          use: getStyleLoaders({
-            esModule: false,
-            importLoaders: 1,
-            sourceMap: isDevEnv,
-          }),
-        },
-        {
-          test: sassRegex,
-          exclude: sassModuleRegex,
-          use: getStyleLoaders(
-            {
-              esModule: false,
-              importLoaders: 3,
-              sourceMap: isDevEnv,
-            },
-            'sass-loader'
-          ),
         },
         {
           test: /\.vue$/,
           loader: 'vue-loader',
         },
         {
-          test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/],
-          loader: require.resolve('url-loader'),
-          options: {
-            limit: imageInlineSizeLimit,
-            name: 'media/[name].[hash:8].[ext]',
-          },
+          oneOf: [
+            {
+              test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/],
+              loader: require.resolve('url-loader'),
+              options: {
+                limit: imageInlineSizeLimit,
+                name: 'media/[name].[hash:8].[ext]',
+              },
+            },
+            {
+              test: /\.js$/,
+              exclude: /@babel(?:\/|\\{1,2})runtime/,
+              loader: require.resolve('babel-loader'),
+              options: {
+                babelrc: false,
+                configFile: false,
+                compact: false,
+                // presets:
+                cacheDirectory: productionCache,
+                cacheCompression: false,
+                sourceMaps: shouldUseSourceMap,
+                inputSourceMap: shouldUseSourceMap,
+              },
+            },
+            {
+              test: cssRegex,
+              exclude: cssModuleRegex,
+              use: getStyleLoaders({
+                esModule: false,
+                importLoaders: 1,
+                sourceMap: isProdEnv ? shouldUseSourceMap : isDevEnv,
+              }),
+              sideEffects: true,
+            },
+            {
+              test: sassRegex,
+              exclude: sassModuleRegex,
+              use: getStyleLoaders(
+                {
+                  esModule: false,
+                  importLoaders: 3,
+                  sourceMap: isProdEnv ? shouldUseSourceMap : isDevEnv,
+                },
+                'sass-loader'
+              ),
+              sideEffects: true,
+            },
+            {
+              loader: require.resolve('file-loader'),
+              exclude: [/\.(js|mjs|jsx|ts|tsx|vue)$/, /\.html$/, /\.json$/],
+              options: {
+                name: 'media/[name].[hash:8].[ext]',
+              },
+            },
+          ],
         },
       ],
     },
@@ -169,10 +192,31 @@ module.exports = webpackEnv => {
     plugins: [
       isProdEnv && new CleanWebpackPlugin(),
 
-      new HtmlWebpackPlugin({
-        inject: true,
-        template: paths.appTemplate,
-      }),
+      new HtmlWebpackPlugin(
+        Object.assign(
+          {},
+          {
+            inject: true,
+            template: paths.appTemplate,
+          },
+          isProdEnv
+            ? {
+                minify: {
+                  removeComments: true,
+                  collapseWhitespace: true,
+                  removeRedundantAttributes: true,
+                  useShortDoctype: true,
+                  removeEmptyAttributes: true,
+                  removeStyleLinkTypeAttributes: true,
+                  keepClosingSlash: true,
+                  minifyJS: true,
+                  minifyCSS: true,
+                  minifyURLs: true,
+                },
+              }
+            : undefined
+        )
+      ),
 
       new VueLoaderPlugin(),
 
@@ -187,9 +231,18 @@ module.exports = webpackEnv => {
       //     patterns: [{ from: paths.appPublic, to: paths.appBuild }],
       //   }),
 
+      productionGzip &&
+        new CompressionWebpackPlugin({
+          test: /\.js$|\.css$|\.html$/,
+          threshold: 10240,
+          deleteOriginalAssets: false,
+        }),
+
       new webpack.DefinePlugin(env.stringified),
 
       isDevEnv && new webpack.HotModuleReplacementPlugin(),
+
+      new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
     ].filter(Boolean),
 
     resolve: {

@@ -31,6 +31,8 @@ const defaultConfig = {
     inlineRuntimeChunk: false,
     shouldUseSourceMap: false,
     imageInlineSizeLimit: 10000,
+    productionCache: true,
+    productionGzip: false,
   },
 };
 
