@@ -255,6 +255,7 @@ module.exports = webpackEnv => {
       modules: ['node_modules', paths.appNodeModules],
       extensions: ['.js', '.jsx', '.ts', '.tsx', '.vue', '.json'],
       alias: {
+        vue$: 'vue/dist/vue.esm.js',
         '@': paths.appSrc,
       },
     },
