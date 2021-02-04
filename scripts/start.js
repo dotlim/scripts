@@ -6,6 +6,7 @@ const address = require('address');
 const webpack = require('webpack');
 const WebpackDevServer = require('webpack-dev-server');
 const chalk = require('chalk');
+const open = require('open');
 const configFactory = require('../config/webpack.config');
 const config = require('../config/dotlim.config');
 const paths = require('../config/paths');
@@ -65,6 +66,7 @@ module.exports = opts => {
     console.log(`- ${chalk.bold('Local:')}    ${chalk.cyan(localUrl)}`);
     lanUrl && console.log(`- ${chalk.bold('Network:')}  ${chalk.cyan(lanUrl)}`);
     console.log();
+    open(localUrl);
   });
 
   const server = new WebpackDevServer(compiler, devServerConfig);
