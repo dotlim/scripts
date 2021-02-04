@@ -125,7 +125,7 @@ module.exports = webpackEnv => {
           include: paths.appSrc,
           loader: require.resolve('babel-loader'),
           options: {
-            cacheDirectory: productionCache,
+            cacheDirectory: isProdEnv && productionCache,
             cacheCompression: false,
             compact: isProdEnv,
           },
@@ -153,7 +153,7 @@ module.exports = webpackEnv => {
                 configFile: false,
                 compact: false,
                 // presets:
-                cacheDirectory: productionCache,
+                cacheDirectory: isProdEnv && productionCache,
                 cacheCompression: false,
                 sourceMaps: shouldUseSourceMap,
                 inputSourceMap: shouldUseSourceMap,
@@ -236,7 +236,8 @@ module.exports = webpackEnv => {
       //     patterns: [{ from: paths.appPublic, to: paths.appBuild }],
       //   }),
 
-      productionGzip &&
+      isProdEnv &&
+        productionGzip &&
         new CompressionWebpackPlugin({
           test: /\.js$|\.css$|\.html$/,
           threshold: 10240,
