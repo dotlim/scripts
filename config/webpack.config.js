@@ -231,10 +231,18 @@ module.exports = webpackEnv => {
           chunkFilename: 'css/[name].[contenthash:8].chunk.css',
         }),
 
-      // isProdEnv &&
-      //   new CopyWebpackPlugin({
-      //     patterns: [{ from: paths.appPublic, to: paths.appBuild }],
-      //   }),
+      isProdEnv &&
+        new CopyWebpackPlugin({
+          patterns: [
+            {
+              from: paths.appPublic,
+              to: paths.appBuild,
+              globOptions: {
+                ignore: ['**/*.html'],
+              },
+            },
+          ],
+        }),
 
       isProdEnv &&
         productionGzip &&
