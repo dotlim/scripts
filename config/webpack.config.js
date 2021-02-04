@@ -39,7 +39,12 @@ module.exports = webpackEnv => {
     const loaders = [
       require.resolve('vue-style-loader'),
       isDevEnv && require.resolve('style-loader'),
-      isProdEnv && MiniCssExtractPlugin.loader,
+      isProdEnv && {
+        loader: MiniCssExtractPlugin.loader,
+        options: {
+          publicPath: '../',
+        },
+      },
       {
         loader: require.resolve('css-loader'),
         options: cssOptions,
