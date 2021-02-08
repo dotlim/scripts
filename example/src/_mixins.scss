@@ -1,0 +1,57 @@
+@import './var.scss';
+
+@mixin gen-box-series($t, $s) {
+  $type: map-get(
+    $map: $type-map,
+    $key: $t,
+  );
+
+  $size: $gap-base * $s;
+
+  @each $d in (t, r, b, l, x, y, a) {
+    .#{$t}#{$d}-#{$s} {
+      $direction: map-get(
+        $map: $direction-map,
+        $key: $d,
+      );
+
+      @if $direction {
+        #{$type}-#{$direction}: $size;
+      } @else if $d == 'x' {
+        #{$type}-left: $size;
+        #{$type}-right: $size;
+      } @else if $d == 'y' {
+        #{$type}-top: $size;
+        #{$type}-bottom: $size;
+      } @else if $d == 'a' {
+        #{$type}: $size;
+      }
+    }
+  }
+}
+
+@mixin gen-font-size($steps) {
+  @for $i from 0 through $steps {
+    .fs-#{$i} {
+      font-size: $font-size-base + $i * 2;
+    }
+  }
+}
+
+@mixin gen-text-align {
+  @each $type in left, right, center {
+    .text-#{$type} {
+      text-align: $type;
+    }
+  }
+}
+
+@mixin gen-font-color {
+  @each $type,
+    $color in (primary: $primary-color, success: $success-color, danger: $danger-color, warning: $warning-color)
+  {
+    .text-#{$type} {
+      color: $color;
+    }
+  }
+}

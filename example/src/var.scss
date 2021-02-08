@@ -1,0 +1,38 @@
+// ---------------- 颜色变量 ------------------
+$primary-color: #008aff;
+$success-color: #52c41a !default;
+$warning-color: #faad14 !default;
+$danger-color: #f5222d !default;
+
+// -------------- 文字颜色变量 ----------------
+$text-color-1: #303133 !default; // 主要
+$text-color-2: #606266 !default; // 常规
+$text-color-3: #909399 !default; // 次要
+$text-color-4: #c0c4cc !default; // 占位
+
+// -------------- 边框颜色变量 ----------------
+$border-color-1: #dcdfe6 !default; // 一级
+$border-color-2: #dcdfe6 !default; // 二级
+$border-color-3: #dcdfe6 !default; // 三级
+$border-color-4: #dcdfe6 !default; // 四级
+
+// -------------- 块级元素阴影 ----------------
+$block-shadow: 1px 1px 5px 0 #cbcbcb;
+
+// ---------------- 全局字体 ------------------
+$global-font: 'Helvetica Neue', Helvetica, Tahoma, Arial, 'PingFang SC', 'Source Han Sans CN', 'Source Han Sans',
+  'Hiragino Sans GB', 'WenQuanYi Micro Hei', sans-serif;
+
+// ---------------- 盒模型 ------------------
+$gap-base: 8px;
+$type-map: (
+  m: 'margin',
+  p: 'padding'
+);
+$direction-map: (
+  t: 'top',
+  r: 'right',
+  b: 'bottom',
+  l: 'left'
+);
+$font-size-base: 12px;

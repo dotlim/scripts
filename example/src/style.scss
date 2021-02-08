@@ -1,17 +1,10 @@
-.info-block {
-  display: flex;
-  flex-flow: row nowrap;
-  justify-content: center;
-  align-items: center;
+@import './mixins';
 
-  // label klass
-  .info-label {
-    width: 100px;
-    color: rgba(0, 0, 0, 0.65);
-  }
-
-  // value klass
-  .info-value {
-    color: rgba(0, 0, 0, 0.85);
-  }
+@for $i from 0 through 5 {
+  @include gen-box-series(m, $i);
+  @include gen-box-series(p, $i);
 }
+
+@include gen-font-size(6);
+@include gen-text-align;
+@include gen-font-color;
