@@ -9,7 +9,7 @@ module.exports = {
   contentBase: paths.appPublic,
   contentBasePublicPath: publicPath,
   watchContentBase: true,
-  hot: true,
+  hot: config.devServer.hot,
   compress: true,
   clientLogLevel: 'none',
   transportMode: 'ws',

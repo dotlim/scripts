@@ -21,6 +21,7 @@ module.exports = opts => {
   const isOpen = Boolean(devServer.open);
   const openHost = !isOpen ? false : devServer.open === true ? 'localhost' : devServer.open;
   const isLocal = ['localhost', '127.0.0.1', '0.0.0.0'].includes(openHost);
+  let hasOpen = false;
 
   const localUrl = url.format({
     protocol: 'http',
@@ -66,7 +67,10 @@ module.exports = opts => {
     console.log(`- ${chalk.bold('Local:')}    ${chalk.cyan(localUrl)}`);
     lanUrl && console.log(`- ${chalk.bold('Network:')}  ${chalk.cyan(lanUrl)}`);
     console.log();
-    open(localUrl);
+    if (!hasOpen) {
+      open(localUrl);
+      hasOpen = true;
+    }
   });
 
   const server = new WebpackDevServer(compiler, devServerConfig);

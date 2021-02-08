@@ -83,7 +83,7 @@ module.exports = webpackEnv => {
 
   return {
     mode: isProdEnv ? 'production' : isDevEnv ? 'development' : 'none',
-    devtool: isProdEnv ? (shouldUseSourceMap ? 'source-map' : false) : isDevEnv && 'cheap-module-source-map',
+    devtool: isProdEnv ? (shouldUseSourceMap ? 'cheap-source-map' : false) : isDevEnv && 'eval-cheap-module-source-map',
 
     entry: {
       main: paths.appEntry,

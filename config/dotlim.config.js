@@ -23,6 +23,7 @@ const defaultConfig = {
   outputDir: 'build',
   lineOnSave: false,
   devServer: {
+    hot: true,
     open: true,
     port: 9090,
     proxy: {},
